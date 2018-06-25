@@ -2003,32 +2003,36 @@ protected:
 
 	bool send(const hrt_abstime t)
 	{
-		struct estimator_status_s est = {};
+		estimator_status_s est;
 
 		if (_est_sub->update(&_est_time, &est)) {
-			mavlink_local_position_ned_cov_t msg = {};
 
-			msg.time_usec = est.timestamp;
-			msg.x = est.states[0];
-			msg.y = est.states[1];
-			msg.z = est.states[2];
-			msg.vx = est.states[3];
-			msg.vy = est.states[4];
-			msg.vz = est.states[5];
-			msg.ax = est.states[6];
-			msg.ay = est.states[7];
-			msg.az = est.states[8];
+			// HACK for LPE, this is completely wrong for EKF2
+			if (est.health_flags != 0) {
+				mavlink_local_position_ned_cov_t msg = {};
 
-			for (int i = 0; i < 9; i++) {
-				msg.covariance[i] = est.covariances[i];
+				msg.time_usec = est.timestamp;
+				msg.x = est.states[0];
+				msg.y = est.states[1];
+				msg.z = est.states[2];
+				msg.vx = est.states[3];
+				msg.vy = est.states[4];
+				msg.vz = est.states[5];
+				msg.ax = est.states[6];
+				msg.ay = est.states[7];
+				msg.az = est.states[8];
+
+				for (int i = 0; i < 9; i++) {
+					msg.covariance[i] = est.covariances[i];
+				}
+
+				msg.covariance[10] = est.health_flags;
+				msg.covariance[11] = est.timeout_flags;
+
+				mavlink_msg_local_position_ned_cov_send_struct(_mavlink->get_channel(), &msg);
+
+				return true;
 			}
-
-			msg.covariance[10] = est.health_flags;
-			msg.covariance[11] = est.timeout_flags;
-
-			mavlink_msg_local_position_ned_cov_send_struct(_mavlink->get_channel(), &msg);
-
-			return true;
 		}
 
 		return false;
