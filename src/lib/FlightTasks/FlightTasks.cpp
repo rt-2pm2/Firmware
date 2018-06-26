@@ -113,7 +113,7 @@ int FlightTasks::switchTask(int new_task_index)
 
 void FlightTasks::handleParameterUpdate()
 {
-	if (_current_task) {
+	if (isAnyTaskActive()) {
 		_current_task->handleParameterUpdate();
 	}
 }
