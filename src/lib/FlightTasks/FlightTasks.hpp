@@ -93,7 +93,7 @@ public:
 
 	/**
 	 * Switch to the next task in the available list (for testing)
-	 * @return true on success, false on error
+	 * @return 1 on success, <0 on error
 	 */
 	int switchTask() { return switchTask(static_cast<int>(_current_task_index) + 1); }
 

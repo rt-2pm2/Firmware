@@ -27,12 +27,12 @@ const vehicle_local_position_setpoint_s FlightTasks::getPositionSetpoint()
 
 int FlightTasks::switchTask(FlightTaskIndex new_task_index)
 {
-	/* switch to the running task, nothing to do */
+	// switch to the running task, nothing to do
 	if (new_task_index == _current_task_index) {
 		return 0;
 	}
 
-	/* disable the old task if there is any */
+	// disable the old task if there is any
 	if (_current_task) {
 		_current_task->~FlightTask();
 		_current_task = nullptr;
@@ -41,7 +41,7 @@ int FlightTasks::switchTask(FlightTaskIndex new_task_index)
 
 	switch (new_task_index) {
 	case FlightTaskIndex::None:
-		/* disable tasks is a success */
+		// disable tasks is a success
 		return 0;
 
 	case FlightTaskIndex::Stabilized:
@@ -73,11 +73,11 @@ int FlightTasks::switchTask(FlightTaskIndex new_task_index)
 		break;
 
 	default:
-		/* invalid task */
+		// invalid task
 		return -1;
 	}
 
-	/* subscription failed */
+	// subscription failed
 	if (!_current_task->initializeSubscriptions(_subscription_array)) {
 		_current_task->~FlightTask();
 		_current_task = nullptr;
@@ -87,7 +87,7 @@ int FlightTasks::switchTask(FlightTaskIndex new_task_index)
 
 	_subscription_array.forcedUpdate(); // make sure data is available for all new subscriptions
 
-	/* activation failed */
+	// activation failed
 	if (!_current_task->updateInitialize() || !_current_task->activate()) {
 		_current_task->~FlightTask();
 		_current_task = nullptr;
@@ -101,7 +101,7 @@ int FlightTasks::switchTask(FlightTaskIndex new_task_index)
 
 int FlightTasks::switchTask(int new_task_index)
 {
-	/* make sure we are in range of the enumeration before casting */
+	// make sure we are in range of the enumeration before casting
 	if (static_cast<int>(FlightTaskIndex::None) <= new_task_index &&
 	    static_cast<int>(FlightTaskIndex::Count) > new_task_index) {
 		return switchTask(FlightTaskIndex(new_task_index));
