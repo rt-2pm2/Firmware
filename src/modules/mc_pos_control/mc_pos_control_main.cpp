@@ -155,6 +155,7 @@ private:
 	orb_id_t _attitude_setpoint_id;
 
 	struct vehicle_status_s 			_vehicle_status; 	/**< vehicle status */
+	uint8_t 					_last_nav_state; 	/**< previous navigation state to check for a change */
 	struct vehicle_land_detected_s 			_vehicle_land_detected;	/**< vehicle land detected */
 	struct vehicle_attitude_s			_att;			/**< vehicle attitude */
 	struct vehicle_attitude_setpoint_s		_att_sp;		/**< vehicle attitude setpoint */
@@ -3070,34 +3071,38 @@ MulticopterPositionControl::task_main()
 			_alt_hold_engaged = false;
 		}
 
-		if (_test_flight_tasks.get()) {
-			switch (_vehicle_status.nav_state) {
-			case vehicle_status_s::NAVIGATION_STATE_ALTCTL:
-				_flight_tasks.switchTask(FlightTaskIndex::Altitude);
-				break;
+		if (_vehicle_status.nav_state != _last_nav_state) {
+			if (_test_flight_tasks.get()) {
+				switch (_vehicle_status.nav_state) {
+				case vehicle_status_s::NAVIGATION_STATE_ALTCTL:
+					_flight_tasks.switchTask(FlightTaskIndex::Altitude);
+					break;
 
-			case vehicle_status_s::NAVIGATION_STATE_POSCTL:
-				_flight_tasks.switchTask(FlightTaskIndex::Position);
-				break;
+				case vehicle_status_s::NAVIGATION_STATE_POSCTL:
+					_flight_tasks.switchTask(FlightTaskIndex::Position);
+					break;
 
-			case vehicle_status_s::NAVIGATION_STATE_MANUAL:
-				_flight_tasks.switchTask(FlightTaskIndex::Stabilized);
-				break;
+				case vehicle_status_s::NAVIGATION_STATE_MANUAL:
+					_flight_tasks.switchTask(FlightTaskIndex::Stabilized);
+					break;
 
-			default:
-				/* not supported yet */
+				default:
+					/* not supported yet */
+					_flight_tasks.switchTask(FlightTaskIndex::None);
+				}
+
+			} else {
+				/* make sure to disable any task when we are not testing them */
 				_flight_tasks.switchTask(FlightTaskIndex::None);
 			}
-
-		} else {
-			/* make sure to disable any task when we are not testing them */
-			_flight_tasks.switchTask(FlightTaskIndex::None);
 		}
 
+		_last_nav_state = _vehicle_status.nav_state;
+
+		/* call update in any case to run the MAVLink command handler of the flight task library and allow switching to orbit */
+		_flight_tasks.update();
+
 		if (_test_flight_tasks.get() && _flight_tasks.isAnyTaskActive()) {
-
-			_flight_tasks.update();
-
 			/* Get Flighttask setpoints */
 			vehicle_local_position_setpoint_s setpoint = _flight_tasks.getPositionSetpoint();
 
@@ -3137,9 +3142,7 @@ MulticopterPositionControl::task_main()
 				// Keep throttle low while still on ground.
 				set_idle_state();
 
-			} else if (_vehicle_status.nav_state == _vehicle_status.NAVIGATION_STATE_MANUAL ||
-				   _vehicle_status.nav_state == _vehicle_status.NAVIGATION_STATE_POSCTL ||
-				   _vehicle_status.nav_state == _vehicle_status.NAVIGATION_STATE_ALTCTL) {
+			} else {
 
 
 				_control.updateState(_local_pos, matrix::Vector3f(&(_vel_err_d(0))));
