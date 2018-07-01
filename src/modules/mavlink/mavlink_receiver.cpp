@@ -1822,13 +1822,8 @@ MavlinkReceiver::handle_message_heartbeat(mavlink_message_t *msg)
 			tstatus.timestamp = hrt_absolute_time();
 			tstatus.heartbeat_time = tstatus.timestamp;
 
-			if (_telemetry_status_pub == nullptr) {
-				int multi_instance;
-				_telemetry_status_pub = orb_advertise_multi(ORB_ID(telemetry_status), &tstatus, &multi_instance, ORB_PRIO_HIGH);
-
-			} else {
-				orb_publish(ORB_ID(telemetry_status), _telemetry_status_pub, &tstatus);
-			}
+			int multi_instance;
+			orb_publish_auto(ORB_ID(telemetry_status), &_telemetry_status_pub, &tstatus, &multi_instance, ORB_PRIO_HIGH);
 		}
 	}
 }
