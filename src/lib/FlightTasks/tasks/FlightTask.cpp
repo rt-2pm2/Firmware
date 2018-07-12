@@ -1,5 +1,6 @@
 #include "FlightTask.hpp"
 #include <mathlib/mathlib.h>
+#include <lib/ecl/geo/geo.h>
 
 constexpr uint64_t FlightTask::_timeout;
 /* First index of empty_setpoint corresponds to time-stamp and requires a finite number. */
@@ -59,6 +60,12 @@ bool FlightTask::_evaluateVehiclePosition()
 		_position = matrix::Vector3f(&_sub_vehicle_local_position->get().x);
 		_velocity = matrix::Vector3f(&_sub_vehicle_local_position->get().vx);
 		_yaw = _sub_vehicle_local_position->get().yaw;
+
+		if (_sub_vehicle_local_position->get().xy_global && _sub_vehicle_local_position->get().z_global) {
+			globallocalconverter_init(_sub_vehicle_local_position->get().ref_lat, _sub_vehicle_local_position->get().ref_lon,
+						  _sub_vehicle_local_position->get().ref_alt, _sub_vehicle_local_position->get().ref_timestamp);
+		}
+
 		return true;
 
 	} else {
