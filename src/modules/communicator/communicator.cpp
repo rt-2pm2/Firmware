@@ -39,11 +39,8 @@
 #include <px4_posix.h>
 
 #include <uORB/topics/parameter_update.h>
-<<<<<<< HEAD
-=======
 #include <uORB/topics/sensor_combined.h>
 
->>>>>>> Added the "communicator" application
 #include <drivers/drv_pwm_output.h>
 
 const unsigned mode_flag_armed = 128; // following MAVLink spec
@@ -56,11 +53,6 @@ int Communicator::print_usage(const char *reason)
 	}
 
 	PRINT_MODULE_DESCRIPTION(
-<<<<<<< HEAD
-			R"DESCR_STR(
-=======
-		R"DESCR_STR(
->>>>>>> Added the "communicator" application
 ### Description
 This module is used with the Simulation Framework.
 
@@ -75,11 +67,7 @@ $ communicator start -a <ip> -p <port>
 
 )DESCR_STR");
 
-<<<<<<< HEAD
-		PRINT_MODULE_USAGE_NAME("communicator", "module");
-=======
 	PRINT_MODULE_USAGE_NAME("communicator", "module");
->>>>>>> Added the "communicator" application
 	PRINT_MODULE_USAGE_COMMAND("start");
 	PRINT_MODULE_USAGE_PARAM_STRING('a', "127.0.0.1", "x.x.x.x",
 			"Destination IP Address", false);
@@ -99,20 +87,6 @@ int Communicator::print_status()
 
 int Communicator::custom_command(int argc, char *argv[])
 {
-	/*
-<<<<<<< HEAD
-	   if (!is_running()) {
-	   print_usage("not running");
-	   return 1;
-	   }
-
-	// additional custom commands can be handled like this:
-	if (!strcmp(argv[0], "do-something")) {
-	get_instance()->do_something();
-	return 0;
-	}
-	*/
-=======
 	if (!is_running()) {
 		print_usage("not running");
 		return 1;
@@ -120,11 +94,9 @@ int Communicator::custom_command(int argc, char *argv[])
 
 	// additional custom commands can be handled like this:
 	if (!strcmp(argv[0], "do-something")) {
-		get_instance()->do_something();
-		return 0;
+	get_instance()->do_something();
+	return 0;
 	}
-	 */
->>>>>>> Added the "communicator" application
 
 	return print_usage("unknown command");
 }
@@ -133,19 +105,11 @@ int Communicator::custom_command(int argc, char *argv[])
 int Communicator::task_spawn(int argc, char *argv[])
 {
 	_task_id = px4_task_spawn_cmd("communicator",
-<<<<<<< HEAD
-			SCHED_DEFAULT,
-			SCHED_PRIORITY_DEFAULT,
-			2048,
-			(px4_main_t)&run_trampoline,
-			(char *const *)argv);
-=======
-				      SCHED_DEFAULT,
-				      SCHED_PRIORITY_DEFAULT,
-				      2048,
-				      (px4_main_t)&run_trampoline,
-				      (char *const *)argv);
->>>>>>> Added the "communicator" application
+	SCHED_DEFAULT,
+	SCHED_PRIORITY_DEFAULT,
+	2048,
+	(px4_main_t)&run_trampoline,
+	(char *const *)argv);
 
 	if (_task_id < 0) {
 		_task_id = -1;
@@ -170,67 +134,6 @@ Communicator *Communicator::instantiate(int argc, char *argv[])
 		if (strcmp(argv[ch], "-p") == 0)
 			port = (int)strtol(argv[ch + 1], nullptr, 10);
 	}
-	/*
-
-<<<<<<< HEAD
-	   bool error_flag = false;
-	   const char* myoptarg = nullptr;
-	   int myoptind = 1;
-	// parse CLI arguments
-	while ((ch = px4_getopt(argc, argv, "p:a", &myoptind, &myoptarg)) != EOF) {
-	switch (ch) {
-	case 'p':
-	port = (int)strtol(myoptarg, nullptr, 10);
-	break;
-
-	case 'a':
-	strcpy(ip, myoptarg);
-	break;
-
-	case '?':
-	error_flag = true;
-	break;
-
-	default:
-	PX4_WARN("unrecognized flag");
-	error_flag = true;
-	break;
-	}
-	}
-
-	if (error_flag) {
-	return nullptr;
-=======
-	bool error_flag = false;
-	const char* myoptarg = nullptr;
-	int myoptind = 1;
-	// parse CLI arguments
-	while ((ch = px4_getopt(argc, argv, "p:a", &myoptind, &myoptarg)) != EOF) {
-		switch (ch) {
-		case 'p':
-			port = (int)strtol(myoptarg, nullptr, 10);
-			break;
-
-		case 'a':
-			strcpy(ip, myoptarg);
-			break;
-
-		case '?':
-			error_flag = true;
-			break;
-
-		default:
-			PX4_WARN("unrecognized flag");
-			error_flag = true;
-			break;
-		}
-	}
-
-	if (error_flag) {
-		return nullptr;
->>>>>>> Added the "communicator" application
-	}*/
-
 	Communicator *instance = new Communicator(ip, port);
 
 	if (instance == nullptr) {
@@ -242,11 +145,7 @@ Communicator *Communicator::instantiate(int argc, char *argv[])
 
 Communicator::Communicator(const char* ip_addr, uint32_t w_port)
 	: ModuleParams(nullptr),
-<<<<<<< HEAD
 	_system_type(MAV_TYPE_QUADROTOR)
-=======
-	  _system_type(MAV_TYPE_QUADROTOR)
->>>>>>> Added the "communicator" application
 {
 	InitializePort(ip_addr, w_port);
 }
@@ -258,10 +157,7 @@ void Communicator::run()
 	px4_pollfd_struct_t fds[1];
 
 	// Example: run the loop synchronized to the actuator_output topic publication
-<<<<<<< HEAD
-=======
 	int sensor_combined_sub = orb_subscribe(ORB_ID(sensor_combined));
->>>>>>> Added the "communicator" application
 	int actuator_outputs_sub[ORB_MULTI_MAX_INSTANCES];
 	int vehicle_status_sub;
 	int parameter_update_sub;
@@ -284,7 +180,6 @@ void Communicator::run()
 	fds[0].fd = actuator_outputs_sub[0];
 	fds[0].events = POLLIN;
 
-<<<<<<< HEAD
 	while (!should_exit()) {
 		// wait for up to 1000ms for data
 		int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
@@ -310,37 +205,29 @@ void Communicator::run()
 		orb_unsubscribe(actuator_outputs_sub[i]);
 	}
 
-=======
-	while (!should_exit())
-	{
+	while (!should_exit()) {
 		// wait for up to 1000ms for data
 		int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
 
-		if (pret == 0)
-		{
-			//PX4_INFO("Timeout");
-			// Timeout: let the loop run anyway, don't do `continue` here
+		if (pret < 0) {
+			// this is undesirable but not much we can do
+			PX4_ERR("poll error %d, %d", pret, errno);
+			usleep(50000);
+			continue;
 
 		} else
-			if (pret < 0)
+			if (fds[0].revents & POLLIN)
 			{
-				// this is undesirable but not much we can do
-				PX4_ERR("poll error %d, %d", pret, errno);
-				usleep(50000);
-				continue;
-
-			} else
-				if (fds[0].revents & POLLIN)
-				{
-					poll_topics(actuator_outputs_sub, vehicle_status_sub);
-					send_controls(actuator_outputs_sub);
-				}
+				poll_topics(actuator_outputs_sub, vehicle_status_sub);
+				send_controls(actuator_outputs_sub);
+			}
 		parameters_update(parameter_update_sub);
 	}
-
-	orb_unsubscribe(sensor_combined_sub);
 	orb_unsubscribe(parameter_update_sub);
->>>>>>> Added the "communicator" application
+	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++)
+	{
+		orb_unsubscribe(actuator_outputs_sub[i]);
+	}
 }
 
 void Communicator::parameters_update(int parameter_update_sub, bool force)
@@ -393,28 +280,16 @@ void Communicator::pack_actuator_message(mavlink_hil_actuator_controls_t &msg, u
 
 	/* scale outputs depending on system type */
 	if (_system_type == MAV_TYPE_QUADROTOR ||
-<<<<<<< HEAD
-			_system_type == MAV_TYPE_HEXAROTOR ||
-			_system_type == MAV_TYPE_OCTOROTOR ||
-			_system_type == MAV_TYPE_VTOL_DUOROTOR ||
-			_system_type == MAV_TYPE_VTOL_QUADROTOR ||
-			_system_type == MAV_TYPE_VTOL_TILTROTOR ||
-			_system_type == MAV_TYPE_VTOL_RESERVED2) {
-=======
 	    _system_type == MAV_TYPE_HEXAROTOR ||
 	    _system_type == MAV_TYPE_OCTOROTOR ||
 	    _system_type == MAV_TYPE_VTOL_DUOROTOR ||
 	    _system_type == MAV_TYPE_VTOL_QUADROTOR ||
 	    _system_type == MAV_TYPE_VTOL_TILTROTOR ||
 	    _system_type == MAV_TYPE_VTOL_RESERVED2) {
->>>>>>> Added the "communicator" application
-
-		/* multirotors: set number of rotor outputs depending on type */
 
 		unsigned n;
 
 		switch (_system_type) {
-<<<<<<< HEAD
 			case MAV_TYPE_VTOL_DUOROTOR:
 				n = 2;
 				break;
@@ -437,7 +312,6 @@ void Communicator::pack_actuator_message(mavlink_hil_actuator_controls_t &msg, u
 			default:
 				n = 8;
 				break;
-=======
 		case MAV_TYPE_VTOL_DUOROTOR:
 			n = 2;
 			break;
@@ -460,7 +334,6 @@ void Communicator::pack_actuator_message(mavlink_hil_actuator_controls_t &msg, u
 		default:
 			n = 8;
 			break;
->>>>>>> Added the "communicator" application
 		}
 
 		for (unsigned i = 0; i < 16; i++) {
@@ -546,25 +419,15 @@ void Communicator::send_mavlink_message(const mavlink_message_t &aMsg)
 
 void Communicator::InitializePort(const char* ip_addr, uint32_t w_port)
 {
-<<<<<<< HEAD
-	write_port = w_port;
-
+       	write_port = w_port;
 	PX4_INFO("Communicator: IP = %s | Port = %d", ip_addr, w_port);
 
 	// Endpoint for communication file descriptor
-=======
-    write_port = w_port;
-
-    PX4_INFO("Communicator: IP = %s | Port = %d", ip_addr, w_port);
-
-    // Endpoint for communication file descriptor
->>>>>>> Added the "communicator" application
 	if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		PX4_WARN("create socket failed\n");
 		return;
 	}
 
-<<<<<<< HEAD
 	// Initialize remote sockaddr_in structure
 	memset(&remAddr, 0, sizeof(remAddr));
 
@@ -579,22 +442,20 @@ void Communicator::InitializePort(const char* ip_addr, uint32_t w_port)
 		close(sock);
 		exit(EXIT_FAILURE);
 	}
-=======
-    // Initialize remote sockaddr_in structure
-    memset(&remAddr, 0, sizeof(remAddr));
+	// Initialize remote sockaddr_in structure
+	memset(&remAddr, 0, sizeof(remAddr));
 
-    remAddr.sin_family = AF_INET;
-    remAddr.sin_port = htons(write_port);
-    remAddr.sin_addr.s_addr = inet_addr(ip_addr);
+	remAddr.sin_family = AF_INET;
+	remAddr.sin_port = htons(write_port);
+	remAddr.sin_addr.s_addr = inet_addr(ip_addr);
 
-    // Perfoming a non blocking access
-    if (fcntl(sock, F_SETFL, O_NONBLOCK | FASYNC) < 0)
-    {
-    	PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
-        close(sock);
-        exit(EXIT_FAILURE);
-    }
->>>>>>> Added the "communicator" application
+	// Perfoming a non blocking access
+	if (fcntl(sock, F_SETFL, O_NONBLOCK | FASYNC) < 0)
+	{
+		PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
+		close(sock);
+		exit(EXIT_FAILURE);
+	}
 }
 
 
