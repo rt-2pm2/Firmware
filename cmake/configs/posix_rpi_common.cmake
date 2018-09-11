@@ -8,6 +8,7 @@ add_definitions(
 	-D__PX4_POSIX_RPI
 	-D__DF_LINUX # For DriverFramework
 	-D__DF_RPI # For DriverFramework
+	-D MEASURE
 )
 
 
@@ -19,6 +20,7 @@ set(config_module_list
 	drivers/batt_smbus
 	drivers/differential_pressure
 	drivers/distance_sensor
+	drivers/mmapGpio
 	#drivers/telemetry
 
 	modules/sensors
@@ -71,8 +73,10 @@ set(config_module_list
 	modules/commander
 	modules/dataman
 	modules/land_detector
-	modules/navigator
+	modules/navigator	
+	lib/meas
 	modules/mavlink
+	modules/communicator
 
 	#
 	# PX4 drivers
@@ -86,7 +90,6 @@ set(config_module_list
 	drivers/navio_rgbled
 	drivers/pwm_out_sim
 	drivers/rpi_rc_in
-	drivers/linux_mmapGpioLib
 )
 
 #
