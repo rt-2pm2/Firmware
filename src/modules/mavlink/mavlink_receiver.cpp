@@ -103,6 +103,9 @@
 #include "mavlink_receiver.h"
 #include "mavlink_main.h"
 #include "mavlink_command_sender.h"
+#include <meas/class_meas.hpp>
+
+MEASClass classMeas;
 
 #ifdef CONFIG_NET
 #define MAVLINK_RECEIVER_NET_ADDED_STACK 1360
@@ -2028,6 +2031,11 @@ MavlinkReceiver::handle_message_hil_sensor(mavlink_message_t *msg)
 	mavlink_msg_hil_sensor_decode(msg, &imu);
 
 	uint64_t timestamp = hrt_absolute_time();
+	uint64_t ctrtimestamp = imu.time_usec;
+
+#ifdef MEASURE
+	classMeas.check_control_timestamp(ctrtimestamp);
+#endif
 
 	/* airspeed */
 	{

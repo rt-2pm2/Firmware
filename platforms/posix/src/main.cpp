@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 		/* Server/daemon apps need to parse the command line arguments. */
 
 		std::string data_path;
-		std::string commands_file = "etc/init.d/rcS";
+		std::string commands_file = "/etc/init.d/rcS";
 		std::string test_data_path;
 		int instance = 0;
 

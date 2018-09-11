@@ -43,6 +43,10 @@
 
 #include <drivers/drv_pwm_output.h>
 
+#include <meas/class_meas.hpp>
+
+extern MEASClass classMeas;
+
 const unsigned mode_flag_armed = 128; // following MAVLink spec
 const unsigned mode_flag_custom = 1;
 
@@ -161,6 +165,7 @@ void Communicator::run()
 	int actuator_outputs_sub[ORB_MULTI_MAX_INSTANCES];
 	int vehicle_status_sub;
 	int parameter_update_sub;
+
 
 	// ===================================================================
 	// subscribe to topics
@@ -396,6 +401,7 @@ void Communicator::send_controls(int _actuator_outputs_sub[ORB_MULTI_MAX_INSTANC
 				&message, &hil_act_control);
 		send_mavlink_message(message);
 
+		classMeas.insert_control_timestamp(hil_act_control.time_usec);
 	}
 }
 
@@ -440,7 +446,6 @@ void Communicator::InitializePort(const char* ip_addr, uint32_t w_port)
 	{
 		PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
 		close(sock);
-		exit(EXIT_FAILURE);
 	}
 	// Initialize remote sockaddr_in structure
 	memset(&remAddr, 0, sizeof(remAddr));
