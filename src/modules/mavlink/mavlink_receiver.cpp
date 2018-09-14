@@ -98,7 +98,9 @@
 #include "mavlink_command_sender.h"
 #include <meas/class_meas.hpp>
 
+#ifdef MEASURE
 MEASClass classMeas;
+#endif
 
 using matrix::wrap_2pi;
 
@@ -1952,10 +1954,11 @@ MavlinkReceiver::handle_message_hil_sensor(mavlink_message_t *msg)
 	mavlink_msg_hil_sensor_decode(msg, &imu);
 
 	uint64_t timestamp = hrt_absolute_time();
-	uint64_t ctrtimestamp = imu.time_usec;
 
 #ifdef MEASURE
+	uint64_t ctrtimestamp = imu.time_usec;
 	classMeas.check_control_timestamp(ctrtimestamp);
+	//printf("SNS time: %llu \n", ctrtimestamp);	
 #endif
 
 	/* airspeed */
