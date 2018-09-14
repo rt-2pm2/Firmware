@@ -41,6 +41,15 @@
 #include <uORB/topics/parameter_update.h>
 #include <drivers/drv_pwm_output.h>
 
+<<<<<<< HEAD
+=======
+#include <meas/class_meas.hpp>
+
+#ifdef MEASURE
+extern MEASClass classMeas;
+#endif
+
+>>>>>>> Measurement
 const unsigned mode_flag_armed = 128; // following MAVLink spec
 const unsigned mode_flag_custom = 1;
 
@@ -193,6 +202,10 @@ void Communicator::run()
 	int vehicle_status_sub;
 	int parameter_update_sub;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> Measurement
 	// ===================================================================
 	// subscribe to topics
 
@@ -383,7 +396,12 @@ void Communicator::send_controls(int _actuator_outputs_sub[ORB_MULTI_MAX_INSTANC
 		mavlink_msg_hil_actuator_controls_encode(_vehicle_status.system_id, 200,
 				&message, &hil_act_control);
 		send_mavlink_message(message);
+#ifdef MEASURE
+		classMeas.insert_control_timestamp(hil_act_control.time_usec);
+		printf("Ctr time: %llu \n", hil_act_control.time_usec);	
 
+
+#endif
 	}
 }
 
@@ -429,7 +447,10 @@ void Communicator::InitializePort(const char* ip_addr, uint32_t w_port)
 	{
 		PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
 		close(sock);
+<<<<<<< HEAD
 		exit(EXIT_FAILURE);
+=======
+>>>>>>> Measurement
 	}
 }
 

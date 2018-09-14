@@ -77,6 +77,8 @@
 #include "mavlink_shell.h"
 #include "mavlink_ulog.h"
 
+#include <meas/class_meas.hpp>
+
 enum Protocol {
 	SERIAL = 0,
 	UDP,
@@ -86,6 +88,7 @@ enum Protocol {
 using namespace time_literals;
 
 #define HASH_PARAM "_HASH_CHECK"
+
 
 class Mavlink : public ModuleParams
 {
