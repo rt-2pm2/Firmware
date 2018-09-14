@@ -67,7 +67,8 @@ size_t insert(struct circ_arr* ca, uint64_t val)
 		//printf("Inserting %d\n",val);
 		ca->ca[ca->tail] = val;  
 		ca->tail = (ca->tail + 1) % ca->arr_dim;
-		
+		ca->N_values++;	
+
 		ret = ca->N_values;	
 		//pthread_mutex_unlock(&ca->mutex);
 			
@@ -96,6 +97,7 @@ uint64_t retrieve(struct circ_arr* ca, size_t i)
 	// Check for empty vector
 	if (isempty(ca))
 	{
+		puts("Empty queue!");
 		return 0;
 	}
 
@@ -203,7 +205,6 @@ void MEASClass::check_control_timestamp(uint64_t imutime)
 		indexfound = ispresent(&tmstmp_circ_arr, imutime);
 		if (indexfound != -1)
 		{
-			puts("Hi");
 			// Put down the pin to signal the received packet
 			gpio.writePinLow(PINOUT2);		
 
