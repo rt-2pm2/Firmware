@@ -844,12 +844,14 @@ Mavlink::set_hil_enabled(bool hil_enabled)
 
 	/* enable HIL (only on links with sufficient bandwidth) */
 	if (hil_enabled && !_hil_enabled && _datarate > 5000) {
+		PX4_WARN("Enabling HIL controls");
 		_hil_enabled = true;
 		//ret = configure_stream("HIL_ACTUATOR_CONTROLS", 200.0f);
 	}
 
 	/* disable HIL */
 	if (!hil_enabled && _hil_enabled) {
+		PX4_WARN("Disabling HIL controls");
 		_hil_enabled = false;
 		ret = configure_stream("HIL_ACTUATOR_CONTROLS", 0.0f);
 	}
