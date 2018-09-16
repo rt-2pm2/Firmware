@@ -41,5 +41,5 @@ px4_add_module(
 		communicator.cpp
 	DEPENDS
 		modules__uORB
-		drivers__mmapGpio
+		#drivers__mmapGpio
 	)
