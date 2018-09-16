@@ -41,15 +41,12 @@
 #include <uORB/topics/parameter_update.h>
 #include <drivers/drv_pwm_output.h>
 
-<<<<<<< HEAD
-=======
-#include <meas/class_meas.hpp>
 
 #ifdef MEASURE
+#include <meas/class_meas.hpp>
 extern MEASClass classMeas;
 #endif
 
->>>>>>> Measurement
 const unsigned mode_flag_armed = 128; // following MAVLink spec
 const unsigned mode_flag_custom = 1;
 
@@ -202,10 +199,6 @@ void Communicator::run()
 	int vehicle_status_sub;
 	int parameter_update_sub;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> Measurement
 	// ===================================================================
 	// subscribe to topics
 
@@ -447,10 +440,6 @@ void Communicator::InitializePort(const char* ip_addr, uint32_t w_port)
 	{
 		PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
 		close(sock);
-<<<<<<< HEAD
-		exit(EXIT_FAILURE);
-=======
->>>>>>> Measurement
 	}
 }
 
