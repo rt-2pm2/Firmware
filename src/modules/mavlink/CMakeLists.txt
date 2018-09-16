@@ -62,7 +62,7 @@ px4_add_module(
 	MODULE_CONFIG
 		module.yaml
 	DEPENDS
-		measlib
+	#measlib
 		airspeed
 		git_mavlink_v2
 		conversion
