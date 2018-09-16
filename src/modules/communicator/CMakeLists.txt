@@ -41,7 +41,7 @@ px4_add_module(
 		communicator.cpp
 	DEPENDS
 		modules__uORB
-		drivers__mmapGpio
+		#drivers__mmapGpio
 	)
 
 #target_include_directories(modules__communicator INTERFACE ${PX4_SOURCE_DIR}/mavlink/include/mavlink)
