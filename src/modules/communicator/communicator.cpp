@@ -43,9 +43,8 @@
 
 #include <drivers/drv_pwm_output.h>
 
-#include <meas/class_meas.hpp>
-
 #ifdef MEASURE
+#include <meas/class_meas.hpp>
 extern MEASClass classMeas;
 #endif
 
@@ -167,8 +166,6 @@ void Communicator::run()
 	int actuator_outputs_sub[ORB_MULTI_MAX_INSTANCES];
 	int vehicle_status_sub;
 	int parameter_update_sub;
-
-
 	// ===================================================================
 	// subscribe to topics
 
@@ -452,20 +449,6 @@ void Communicator::InitializePort(const char* ip_addr, uint32_t w_port)
 	{
 		PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
 		close(sock);
-	}
-	// Initialize remote sockaddr_in structure
-	memset(&remAddr, 0, sizeof(remAddr));
-
-	remAddr.sin_family = AF_INET;
-	remAddr.sin_port = htons(write_port);
-	remAddr.sin_addr.s_addr = inet_addr(ip_addr);
-
-	// Perfoming a non blocking access
-	if (fcntl(sock, F_SETFL, O_NONBLOCK | FASYNC) < 0)
-	{
-		PX4_WARN("Communicator::InitializePort error: unable to set nonblocking");
-		close(sock);
-		exit(EXIT_FAILURE);
 	}
 }
 
