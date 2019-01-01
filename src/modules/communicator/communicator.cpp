@@ -58,6 +58,7 @@ int Communicator::print_usage(const char *reason)
 	}
 
 	PRINT_MODULE_DESCRIPTION(
+			R"DESCR_STR(
 ### Description
 This module is used with the Simulation Framework.
 
@@ -90,6 +91,7 @@ int Communicator::print_status()
 	return 0;
 }
 
+
 int Communicator::custom_command(int argc, char *argv[])
 {
 	if (!is_running()) {
@@ -97,6 +99,7 @@ int Communicator::custom_command(int argc, char *argv[])
 		return 1;
 	}
 
+	/*
 	// additional custom commands can be handled like this:
 	if (!strcmp(argv[0], "do-something")) {
 	get_instance()->do_something();
@@ -104,6 +107,8 @@ int Communicator::custom_command(int argc, char *argv[])
 	}
 
 	return print_usage("unknown command");
+	*/
+	return 0;
 }
 
 
@@ -161,19 +166,16 @@ void Communicator::run()
 
 	px4_pollfd_struct_t fds[1];
 
-	// Example: run the loop synchronized to the actuator_output topic publication
-	int sensor_combined_sub = orb_subscribe(ORB_ID(sensor_combined));
+	// ===================================================================
+	// subscribe to topics
 	int actuator_outputs_sub[ORB_MULTI_MAX_INSTANCES];
 	int vehicle_status_sub;
 	int parameter_update_sub;
-	// ===================================================================
-	// subscribe to topics
 
 	// Params
 	parameter_update_sub = orb_subscribe(ORB_ID(parameter_update));
 	// Outputs
-	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++)
-	{
+	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++) {
 		actuator_outputs_sub[i] = orb_subscribe_multi(ORB_ID(actuator_outputs), i);
 	}
 	// Status
@@ -185,7 +187,7 @@ void Communicator::run()
 	fds[0].events = POLLIN;
 
 	while (!should_exit()) {
-		// wait for up to 1000ms for data
+		// wait for up to 1000ms for output actuation data
 		int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
 
 		if (pret < 0) {
@@ -195,8 +197,7 @@ void Communicator::run()
 			continue;
 
 		} else
-			if (fds[0].revents & POLLIN)
-			{
+			if (fds[0].revents & POLLIN) {
 				poll_topics(actuator_outputs_sub, vehicle_status_sub);
 				send_controls(actuator_outputs_sub);
 			}
@@ -204,32 +205,7 @@ void Communicator::run()
 	}
 
 	orb_unsubscribe(parameter_update_sub);
-	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++)
-	{
-		orb_unsubscribe(actuator_outputs_sub[i]);
-	}
-
-	while (!should_exit()) {
-		// wait for up to 1000ms for data
-		int pret = px4_poll(fds, (sizeof(fds) / sizeof(fds[0])), 1000);
-
-		if (pret < 0) {
-			// this is undesirable but not much we can do
-			PX4_ERR("poll error %d, %d", pret, errno);
-			usleep(50000);
-			continue;
-
-		} else
-			if (fds[0].revents & POLLIN)
-			{
-				poll_topics(actuator_outputs_sub, vehicle_status_sub);
-				send_controls(actuator_outputs_sub);
-			}
-		parameters_update(parameter_update_sub);
-	}
-	orb_unsubscribe(parameter_update_sub);
-	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++)
-	{
+	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++) {
 		orb_unsubscribe(actuator_outputs_sub[i]);
 	}
 }
@@ -316,28 +292,6 @@ void Communicator::pack_actuator_message(mavlink_hil_actuator_controls_t &msg, u
 			default:
 				n = 8;
 				break;
-		case MAV_TYPE_VTOL_DUOROTOR:
-			n = 2;
-			break;
-
-		case MAV_TYPE_QUADROTOR:
-		case MAV_TYPE_VTOL_QUADROTOR:
-		case MAV_TYPE_VTOL_TILTROTOR:
-			n = 4;
-			break;
-
-		case MAV_TYPE_VTOL_RESERVED2:
-			// this is the standard VTOL / quad plane with 5 propellers
-			n = 5;
-			break;
-
-		case MAV_TYPE_HEXAROTOR:
-			n = 6;
-			break;
-
-		default:
-			n = 8;
-			break;
 		}
 
 		for (unsigned i = 0; i < 16; i++) {
@@ -422,7 +376,7 @@ void Communicator::send_mavlink_message(const mavlink_message_t &aMsg)
 	if (len <= 0) {
 		perror("SendError");
 		PX4_WARN("Failed sending mavlink message");
-		PX4_ERR("poll error %d, %d", len, errno);
+		PX4_ERR("poll error %ld, %d", len, errno);
 	}
 }
 
