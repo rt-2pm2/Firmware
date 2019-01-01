@@ -230,13 +230,11 @@ void Communicator::poll_topics(int _actuator_outputs_sub[ORB_MULTI_MAX_INSTANCES
 {
 	int i;
 
-	// copy new actuator data if available
+	// Copy new actuator data if available
 	bool updated;
 
 	for (i = 0; i < ORB_MULTI_MAX_INSTANCES; i++) {
-
 		orb_check(_actuator_outputs_sub[i], &updated);
-
 		if (updated) {
 			orb_copy(ORB_ID(actuator_outputs), _actuator_outputs_sub[i], &_actuators[i]);
 		}
@@ -356,8 +354,6 @@ void Communicator::send_controls(int _actuator_outputs_sub[ORB_MULTI_MAX_INSTANC
 #ifdef MEASURE
 		classMeas.insert_control_timestamp(hil_act_control.time_usec);
 		printf("Ctr time: %llu \n", hil_act_control.time_usec);	
-
-
 #endif
 	}
 }
